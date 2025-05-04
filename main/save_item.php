@@ -38,14 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
 }
 
-function getInitials($name) {
-    $parts = explode(" ", trim($name));
-    $initials = '';
-    foreach ($parts as $part) {
-        $initials .= strtoupper($part[0]);
-    }
-    return substr($initials, 0, 2);
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -165,26 +158,26 @@ function getInitials($name) {
   </div>
 </div>
 
-<!-- Logout Modal -->
+<!-- LOGOUT CONFIRMATION MODAL -->
 <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">
-      <div class="modal-header border-0">
-        <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Are you sure you want to logout?
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form action="logout.php" method="post">
-          <button type="submit" class="btn btn-light text-dark fw-bold">Logout</button>
-        </form>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to logout?
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="logout.php" method="post">
+            <button type="submit" class="btn btn-light text-dark fw-bold">Logout</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

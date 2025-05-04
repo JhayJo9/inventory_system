@@ -188,11 +188,13 @@ if (!isset($_SESSION['username'])) {
   <h5 class="card-title">Items</h5>
   <p class="card-text">You can edit, update, and delete items here</p>
 
-  <div class="mb-3">
-   
-    <a href="save_item.php" class="btn btn-success"><i class='bx bx-plus'></i> Add Item</a>
 
-  </div>
+
+  <?php if ($_SESSION['role'] === 'Admin'): ?>
+      <div class="mb-3">
+      <a href="save_item.php" class="btn btn-success"><i class='bx bx-plus'></i> Add Item</a>
+    </div>
+        <?php endif; ?>
 
   <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle text-center">
@@ -253,7 +255,7 @@ if (!isset($_SESSION['username'])) {
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <form action="logout.php" method="post">
-            <button type="submit" class="btn btn-light text-dark fw-bold">Logout</button>
+            <input type="submit" name="Logout" value="Logout" class="btn btn-light text-dark fw-bold" />
           </form>
         </div>
       </div>
