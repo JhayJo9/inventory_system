@@ -6,11 +6,11 @@ include("../config.php");
 include("restrictAccess.php");
 
 // IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['admin', 'staff']);
+restrictAccess(['Admin', 'Staff']);
 
 // Redirect to login if not logged in
 if (!isset($_SESSION['username'])) {
-    header("Location: /system/login.php");
+    header("Location: login.php");
     exit;
 
 ?>

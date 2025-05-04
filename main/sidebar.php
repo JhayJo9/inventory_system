@@ -29,10 +29,8 @@ function getInitials($name) {
     </div>
 
     <div class="logout-container">
-        <form action="logout.php" method="post">
-            <button type="submit" class="logout-btn">
-                <i class='bx bx-log-out'></i> Logout
-            </button>
-        </form>
-    </div>
+    <button type="button" class="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
+      <i class='bx bx-log-out'></i> Logout
+    </button>
+  </div>
 </div>

@@ -6,11 +6,11 @@ include("restrictAccess.php");
 include("../config.php");
 
 // IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['admin']);
+restrictAccess(['Admin']);
 
 
 if (!isset($_SESSION['username'])) {
-    header("Location: /system/login.php");
+    header("Location: login.php");
     exit;
 }
 

@@ -6,11 +6,11 @@ include("../config.php");
 include("restrictAccess.php");
 
 // IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['admin', 'staff']);
+restrictAccess(['Admin', 'Staff']);
 
 //
 if (!isset($_SESSION['username'])) {
-    header("Location: /system/login/login.php");
+    header("Location: login.php");
     exit;
 }
 ?>
@@ -238,7 +238,7 @@ if (!isset($_SESSION['username'])) {
     </div>
   </div>
 
-  <!-- Logout Confirmation Modal -->
+  <!-- LOGOUT CONFIRMATION MODAL -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">
