@@ -185,7 +185,7 @@ if (!isset($_SESSION['username'])) {
       <?php include("sidebar.php") ?>
 
   <div class="main">
-  <h5 class="card-title">Items</h5>
+  <h5 class="card-title"><strong>Items</strong></h5>
   <p class="card-text">You can edit, update, and delete items here</p>
 
 
