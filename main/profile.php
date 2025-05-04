@@ -1,18 +1,21 @@
 <?php
 session_start();
+
+// IMPORT THE NEEDED FILES TO ACCESS
+include("../config.php");
+include("restrictAccess.php");
+
+// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+restrictAccess(['admin', 'staff']);
+
 if (!isset($_SESSION['username'])) {
     header("Location: /system/login.php");
     exit;
 }
 
-// Optional: dynamically set initials
-function getInitials($name) {
-    $parts = explode(' ', $name);
-    return strtoupper(substr($parts[0], 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
-}
 
-$username = htmlspecialchars($_SESSION['username']);
-$initials = getInitials($username);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -211,31 +214,12 @@ $initials = getInitials($username);
   </style>
 </head>
 <body>
-<div class="side">
-    <p class="title">Inventory System</p>
-    <div class="circle"><?php echo getInitials($_SESSION['username']); ?></div>
-    <p class="name"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
-    <div class="role">ADMIN</div>
-
-    <div class="nav-anchor">
-      <a href="dashboard.php"><i class='bx bxs-dashboard'></i> Dashboard</a>
-      <a href="items.php"><i class='bx bxs-box'></i> Items</a>
-      <a href="account.php"><i class='bx bxs-user-account'></i> Accounts</a>
-      <a href="profile.php"><i class='bx bxs-user'></i> Profile</a>
-    </div>
-
-    <div class="logout-container">
-      <button type="button" class="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
-        <i class='bx bx-log-out'></i> Logout
-      </button>
-    </div>
-  </div>
-
+      <?php include("sidebar.php") ?>
 
   <div class="main">
     <h1 class="page-title">Personal Information</h1>
     <div class="profile-form">
-      <div class="profile-circle"><?php echo $initials; ?></div>
+      <div class="profile-circle"></div>
       <div class="profile-info">
         <div class="form-group">
           <label>First Name</label>
@@ -251,7 +235,7 @@ $initials = getInitials($username);
         </div>
         <div class="form-group">
           <label>User Name</label>
-          <input type="text" value="<?php echo $username; ?>">
+          <input type="text" value="<?php echo ($_SESSION['username']) ?>">
         </div>
         <div class="form-group">
           <label>Password</label>

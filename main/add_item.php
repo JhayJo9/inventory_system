@@ -1,21 +1,18 @@
 <?php
 session_start();
 
+// IMPORT THE NEEDED FILES TO ACCESS
+include("../config.php");
+include("restrictAccess.php");
+
+// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+restrictAccess(['admin', 'staff']);
+
 // Redirect to login if not logged in
 if (!isset($_SESSION['username'])) {
     header("Location: /system/login.php");
     exit;
-}
 
-// Function to extract initials
-function getInitials($name) {
-    $parts = explode(" ", trim($name));
-    $initials = '';
-    foreach ($parts as $part) {
-        $initials .= strtoupper($part[0]);
-    }
-    return substr($initials, 0, 2);
-}
 ?>
 
 <!DOCTYPE html>
@@ -145,21 +142,7 @@ body {
   </style>
 </head>
 <body>
-<div class="sidebar">
-  <div class="sidebar-title">Inventory System</div>
-  <div class="user-profile">
-    <div class="avatar"></div>
-    <div class="user-info">
-      <div class="username"><?= $_SESSION['username'] ?? 'Admin' ?></div>
-      <span class="role">ADMIN</span>
-    </div>
-  </div>
-  <a class="nav-link" href="dashboard.php"><i class='bx bx-grid-alt'></i> Dashboard</a>
-  <a class="nav-link" href="profile.php"><i class='bx bx-user'></i> Profile</a>
-  <a class="nav-link" href="items.php"><i class='bx bx-box'></i> Items</a>
-  <a class="nav-link" href="accounts.php"><i class='bx bx-group'></i> Accounts</a>
-  <a class="nav-link" href="logout.php"><i class='bx bx-log-out'></i> Logout</a>
-</div>
+      <?php include("sidebar.php") ?>
 
 <div class="main">
   <h1 class="welcome">Add new item</h1>

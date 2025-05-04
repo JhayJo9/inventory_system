@@ -1,22 +1,20 @@
 <?php
 session_start();
 
-include('../config.php');
-// Redirect to login if not logged in
+// IMPORT THE NEEDED FILES TO ACCESS
+include("../config.php");
+include("restrictAccess.php");
+
+// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+restrictAccess(['admin', 'staff']);
+
 if (!isset($_SESSION['username'])) {
     header("Location: /system/login.php");
     exit;
 }
 
-// Function to extract initials (e.g., "First Last" => "FL")
-function getInitials($name) {
-    $parts = explode(" ", trim($name));
-    $initials = '';
-    foreach ($parts as $part) {
-        $initials .= strtoupper($part[0]);
-    }
-    return substr($initials, 0, 2);
-}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -184,25 +182,7 @@ function getInitials($name) {
   </style>
 </head>
 <body>
-  <div class="side">
-    <p class="title">Inventory System</p>
-    <div class="circle"><?php echo getInitials($_SESSION['username']); ?></div>
-    <p class="name"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
-    <div class="role">ADMIN</div>
-
-    <div class="nav-anchor">
-      <a href="dashboard.php"><i class='bx bxs-dashboard'></i> Dashboard</a>
-      <a href="items.php"><i class='bx bxs-box'></i> Items</a>
-      <a href="account.php"><i class='bx bxs-user-account'></i> Accounts</a>
-      <a href="profile.php"><i class='bx bxs-user'></i> Profile</a>
-    </div>
-
-    <div class="logout-container">
-      <button type="button" class="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
-        <i class='bx bx-log-out'></i> Logout
-      </button>
-    </div>
-  </div>
+      <?php include("sidebar.php") ?>
 
   <div class="main">
   <h5 class="card-title">Items</h5>

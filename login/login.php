@@ -1,6 +1,12 @@
 <?php
 session_start();
+
+// IMPORT THE NEEDED FILES TO ACCESS
 include("../config.php");
+include("../main/restrictAccess.php");
+
+// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+//restrictAccess(['admin', 'staff']);
 
 if (isset($_POST["LOGIN"])) {
     if (!empty($_POST["username"]) && !empty($_POST["password"])) {
