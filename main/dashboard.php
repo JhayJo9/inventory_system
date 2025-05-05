@@ -209,7 +209,22 @@ if (!isset($_SESSION['username'])) {
       </div>
       <div class="stat-card">
         <div class="stat-title">LOW STOCK ITEMS</div>
-        <div class="stat-value">0</div>
+        <div class="stat-value">
+        <?php
+                $sql = "SELECT count(quantity) as inStock from items";
+                $result = $conn->query($sql);
+
+                if($result && $result->num_rows > 0) {
+                    while($row = $result->fetch_assoc()) {
+                        echo htmlspecialchars($row['inStock']);
+                    }
+
+                }else{
+                  echo "0";
+                }
+
+            ?>
+        </div>
       </div>
       <div class="stat-card">
         <div class="stat-title">OUT OF STOCK ITEMS</div>

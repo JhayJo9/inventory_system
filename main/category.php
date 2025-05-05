@@ -1,28 +1,23 @@
 <?php
-session_start();
+    include("../config.php");
 
-// IMPORT THE NEEDED FILES TO ACCESS
-include("../config.php");
-include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['Admin', 'Staff']);
 
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
-}
+
+
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700" rel="stylesheet" />
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Inventory Items</title>
-  <style>
+    <title>Document</title>
+    <style>
     * {
       font-family: 'Montserrat', sans-serif;
       box-sizing: border-box;
@@ -182,75 +177,39 @@ if (!isset($_SESSION['username'])) {
   <?php include("sidebar.php") ?>
 
   <div class="main">
-    <h5 class="card-title"><strong>Items</strong></h5>
-    <?php 
-        if($_SESSION['role'] === 'Admin'){
-          echo '<p class="card-text">You can edit, update, and delete items here</p>';
-        }else {
-          echo '<p class="card-text">You can update the quantity</p>';
-        }
-
-    ?>
+    <h5 class="card-title"><strong>Category</strong></h5>
+    <p class="card-text">You can edit, update, and delete category here</p>
 
     <!-- Allow both Admin and Staff to add items -->
     <div class="mb-3">
-     
-      <?php 
-          if ($_SESSION['role'] === 'Admin') {
-            echo '<a href="save_item.php" class="btn btn-success"><i class="bx bx-plus"></i> Add Item</a> ';
-        }
-      ?>
+      <a href="save_category.php" class="btn btn-success"><i class='bx bx-plus'></i> Add Category</a>
     </div>
 
     <div class="table-responsive">
       <table class="table table-bordered table-hover align-middle text-center">
         <thead class="table-dark">
           <tr>
-            <th>Item ID</th>
-            <th>Item Name</th>
-            <th>Unit</th>
+            <th>Category ID</th>
             <th>Category</th>
-            <th>Quantity</th>
-            <th>Restock Point</th>
-            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           <?php
-          $sql = "SELECT
-          item_id,
-          item_no,
-          item_name,
-          category,
-          quantity,
-          item_unit,
-          restock_point,
-          CASE
-              WHEN quantity = 0 THEN 'Out of Stock'
-              WHEN quantity <= restock_point THEN 'Low Stock'
-              ELSE 'Sufficient'
-          END AS status
-      FROM items;";
+          $sql = "SELECT * FROM category";
           $result = $conn->query($sql);
 
           if ($result && $result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
                   echo "<tr>";
-                  echo "<td>" . htmlspecialchars($row['item_no']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['item_name']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['item_unit']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['category']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['quantity']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['restock_point']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                  echo "<td>" . htmlspecialchars($row['category_id']) . "</td>";
+                  echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
                   echo "<td>";
-                  // Both Admin and Staff can edit/update
-                  echo "<a href='edit_item.php?id=" . $row['item_id'] . "' class='btn btn-warning btn-sm'><i class='bx bx-edit'></i></a> ";
-                  // Only Admin can delete
+                  // BOTH ADMIN CAN UPDATE, ADD, DELETE
+                  echo "<a href='edit_item.php?id=" . $row['category_id'] . "' class='btn btn-warning btn-sm'><i class='bx bx-edit'></i></a> ";
                   if ($_SESSION['role'] === 'Admin') {
                       echo "<button class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#deleteModal' 
-                              data-id='" . $row['item_id'] . "' data-name='" . $row['item_name'] . "'>
+                              data-id='" . $row['category_id'] . "' data-name='" . $row['category_name'] . "'>
                               <i class='bx bx-trash'></i>
                             </button>";
                   }

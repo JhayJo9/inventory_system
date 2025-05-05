@@ -140,11 +140,11 @@ if (!isset($_SESSION['username'])) {
       color: #393E46;
     }
     .profile-form {
-      background-color: white;
+      background-color: #D9D9D9;
       border-radius: 10px;
       padding: 2rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-width: 1000px;
+      max-width: 530px;
       display: flex;
       gap: 2rem;
     }

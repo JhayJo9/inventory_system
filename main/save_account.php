@@ -199,7 +199,7 @@ $rolesResult = $conn->query($rolesSql);
   <div class="main">
   <h5 class="card-title">Add Accounts</h5>
   <p class="card-text">You can add account here</p>
-    <div class="card">
+    <div class="card" style="background-color: #D9D9D9;">
       <div class="card-body">
         <?php if (isset($error)): ?>
           <div class="alert alert-danger"><?php echo $error; ?></div>

@@ -1,40 +1,24 @@
-<?php
-session_start();
-
-// IMPORT THE NEEDED FILES TO ACCESS
-include("../config.php");
-include("restrictAccess.php");
-
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['Admin', 'Staff']);
-
-// Redirect to login if not logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700" rel="stylesheet" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700" rel="stylesheet" />
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Add Item</title>
-  <style>
-   body {
-  margin: 0;
-  font-family: 'Montserrat', sans-serif;
-  display: flex;
-}
-body {
+    <style>
+    * {
+      font-family: 'Montserrat', sans-serif;
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+    body {
       display: flex;
       background-color: #F5EEDD;
     }
-.side {
+    .side {
       background-color: #393E46;
       width: 250px;
       height: 100vh;
@@ -123,75 +107,87 @@ body {
       margin-bottom: 2rem;
       width: 100%;
     }
-.main {
-  flex: 1;
-  padding: 3rem;
-  background-color: #fdf3dc;
-}
-
-.welcome {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.subtitle {
-  color: #666;
-  margin-bottom: 2rem;
-}
-
+    .main {
+      margin-left: 250px;
+      width: calc(100% - 250px);
+      padding: 2rem;
+    }
+    .welcome {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .welcome span {
+      font-weight: 700;
+    }
+    .subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: #555;
+    }
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background-color: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .stat-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+    }
+    @media screen and (max-width: 768px) {
+      .side {
+        width: 100px;
+      }
+      .main {
+        margin-left: 100px;
+        width: calc(100% - 100px);
+      }
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
   </style>
 </head>
 <body>
-      <?php include("sidebar.php") ?>
-
-<div class="main">
-  <h1 class="welcome">Add new item</h1>
-  <p class="subtitle">You can edit, update, and delete items here</p>
+     
+        <?php include('sidebar.php'); ?>
+        <div class="main">
+  <h1 class="welcome">Add Category</h1>
+  <p class="subtitle">You can add category here</p>
 
   <div style="max-width: 600px; background-color: #D9D9D9; padding: 2rem; border-radius: 15px;">
     <form action="save_item.php" method="post">
       <div class="row mb-3">
         <div class="col">
-          <label>Item ID</label>
-          <input type="text" name="item_id" class="form-control" required>
+          <label>Category ID</label>
+          <input type="text" name="category_id" class="form-control" required>
         </div>
         <div class="col">
-          <label>Category</label>
-          <select name="category" class="form-select" required>
-            <option disabled selected>Select Category</option>
-            <option value="Cleaning">Cleaning</option>
-            <option value="Furniture">Furniture</option>
-          </select>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col">
-          <label>Item Name</label>
-          <input type="text" name="item_name" class="form-control" required>
-        </div>
-        <div class="col">
-          <label>Quantity</label>
-          <input type="number" name="quantity" class="form-control" required>
-        </div>
-      </div>
-      <div class="row mb-3">
-        <div class="col">
-          <label>Item Unit</label>
-          <input type="text" name="item_unit" class="form-control" required>
-        </div>
-        <div class="col">
-          <label>Restock Point</label>
-          <input type="number" name="restock_point" class="form-control" required>
+          <label>Category Name</label>
+          <input type="text" name="Category_name"  class="form-control" required>
         </div>
       </div>
       <div class="d-flex justify-content-end">
         <button type="submit" class="btn btn-dark me-2">Add</button>
-        <a href="items.php" class="btn btn-danger">Cancel</a>
+        <a href="category.php" class="btn btn-danger">Cancel</a>
       </div>
     </form>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Connection failed: " . $conn->connect_error);
     }
 
+
+
     $stmt = $conn->prepare("INSERT INTO items (item_no, item_name, category, quantity, item_unit, restock_point) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issisi", $id, $name, $category, $quantity, $unit, $restock);
 
@@ -36,6 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->close();
     $conn->close();
+
+
+
+
 }
 
 
@@ -113,20 +119,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <h1 class="welcome">Add new item</h1>
   <p class="subtitle">You can edit, update, and delete items here</p>
 
-  <div style="max-width: 600px; padding: 2rem; border-radius: 15px;">
+  <div style="max-width: 600px; padding: 2rem; border-radius: 15px; background-color: #D9D9D9;">
     <?php if (isset($error)) echo "<div class='alert alert-danger'>$error</div>"; ?>
     <form action="save_item.php" method="post">
       <div class="row mb-3">
         <div class="col">
-          <label>Item No.</label>
-          <input type="text" name="item_id" class="form-control" required>
+          <label>Item ID.</label>
+          <div>
+          <?php 
+           $sql = "select ifnull(max(item_id), 0) + 1 as maxItemid from items";
+           $result = $conn->query($sql);
+
+           if($result && $result->num_rows > 0){
+              while($row = $result->fetch_assoc()){
+                  echo $row['maxItemid'];
+              }
+
+           }
+          ?>
+          </div>
         </div>
         <div class="col">
           <label>Category</label>
           <select name="category" class="form-select" required>
             <option disabled selected>Select Category</option>
-            <option value="Cleaning">Cleaning</option>
-            <option value="Furniture">Furniture</option>
+            <?php 
+
+              $sql = "select * from category";
+              $result = $conn->query($sql);
+              if ($result && $result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                    echo "<option>" .htmlspecialchars($row['category_name']). "</option>";
+                  }
+              }
+            
+            ?>
           </select>
         </div>
       </div>
@@ -149,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <label>Restock Point</label>
           <input type="number" name="restock_point" class="form-control" required>
         </div>
+       
       </div>
       <div class="d-flex justify-content-end">
         <button type="submit" class="btn btn-dark me-2">Add</button>

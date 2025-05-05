@@ -24,6 +24,9 @@ function getInitials($name) {
         <a href="profile.php"><i class='bx bxs-user'></i> Profile</a>
         <a href="items.php"><i class='bx bxs-box'></i> Items</a>
         <?php if ($_SESSION['role'] === 'Admin'): ?>
+          <a href="category.php"><i class='bx bxs-category'></i> Category</a>
+        <?php endif; ?>
+        <?php if ($_SESSION['role'] === 'Admin'): ?>
             <a href="account.php"><i class='bx bxs-user-account'></i> Accounts</a>
         <?php endif; ?>
     </div>
