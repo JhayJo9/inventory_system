@@ -2,6 +2,7 @@
 session_start();
 
 // IMPORT THE NEEDED FILES TO ACCESS
+require_once('check_session.php');
 include("../config.php");
 include("restrictAccess.php");
 
@@ -139,12 +140,13 @@ if (!isset($_SESSION['username'])) {
   </style>
 </head>
 <body>
+  <!-- TO REUSE THE SIDEBAR --> 
   <?php include("sidebar.php") ?>
 
   <div class="main">
     <h5 class="card-title">Accounts</h5>
     <p class="card-text">You can add, edit, update, and delete accounts here</p>
-    
+    <!-- TO NOTIFY THE USER OF THE PROCESS IS SUCCESS OR NOT -->
     <?php if (isset($_SESSION['success_message'])): ?>
     <div class="alert alert-success alert-dismissible fade show">
         <?php 
@@ -184,7 +186,7 @@ if (!isset($_SESSION['username'])) {
         </thead>
         <tbody>
           <?php
-          // Join with roles table to get role names
+          // JOIN WITH ROLE TABLE TO GET THE ROLE NAMES
           $sql = "SELECT u.user_id, u.username, u.first_name, u.last_name, r.role_name, u.status 
                  FROM users u 
                  JOIN roles r ON u.role_id = r.role_id 

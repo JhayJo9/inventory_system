@@ -1,3 +1,25 @@
+<?php 
+
+session_start();
+
+// IMPORT THE NEEDED FILES TO ACCESS
+require_once('check_session.php');
+include("../config.php");
+include("restrictAccess.php");
+
+// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+restrictAccess(['Admin', 'Staff']);
+
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+
+
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,7 +197,19 @@
       <div class="row mb-3">
         <div class="col">
           <label>Category ID</label>
-          <input type="text" name="category_id" class="form-control" required>
+          <?php 
+           $sql = "select ifnull(max(item_id), 0) + 1 as maxItemid from items";
+           $result = $conn->query($sql);
+
+           if($result && $result->num_rows > 0){
+              while($row = $result->fetch_assoc()){
+                  $num = $row['maxItemid'];
+                  echo '<input type="text" value="<!php   ?>" disabled name="category_id" class="form-control" required>';
+              }
+
+           }
+          ?>
+          <input type="text" value="<!php   ?>" disabled name="category_id" class="form-control" required>;
         </div>
         <div class="col">
           <label>Category Name</label>

@@ -3,6 +3,8 @@
 if (session_status() == PHP_SESSION_NONE) {
   session_start();
 }
+require_once('check_session.php');
+
 function getInitials($name) {
     $parts = explode(" ", trim($name));
     $initials = '';
@@ -11,7 +13,6 @@ function getInitials($name) {
     }
     return substr($initials, 0, 2);
 }
-
 ?>
 <div class="side">
     <p class="title">Inventory System</p>
@@ -32,8 +33,10 @@ function getInitials($name) {
     </div>
 
     <div class="logout-container">
-    <button type="button" class="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
-      <i class='bx bx-log-out'></i> Logout
-    </button>
+         
+          <button type="submit" name="logout" value="submit" class="logout-btn" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <i class='bx bx-log-out'></i> Logout
+          </button>
+         
   </div>
 </div>

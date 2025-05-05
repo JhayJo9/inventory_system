@@ -1,18 +1,19 @@
 <?php
-session_start();
+  // Check if session is already started
+  if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+  }
+  require_once('check_session.php');
+  include("../config.php");
+  include("restrictAccess.php");
 
-// IMPORT THE NEEDED FILES TO ACCESS
-include("../config.php");
-include("restrictAccess.php");
+  // IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+  restrictAccess(['Admin', 'Staff']);
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
-restrictAccess(['Admin', 'Staff']);
-
-//
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
-}
+  if (!isset($_SESSION['username'])) {
+      header("Location: login.php");
+      exit;
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -267,13 +268,13 @@ if (!isset($_SESSION['username'])) {
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <form action="logout.php" method="post">
-            <button type="submit" class="btn btn-light text-dark fw-bold">Logout</button>
+            <button type="submit" name="logout" value="submit" class="btn btn-light text-dark fw-bold">Logout</button>
           </form>
         </div>
       </div>
     </div>
   </div>
-
+              
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
