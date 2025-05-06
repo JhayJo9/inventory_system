@@ -13,8 +13,83 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Get user data from database
+$username = $_SESSION['username'];
+$stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+$stmt->bind_param("s", $username);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+$stmt->close();
 
+// Process form submission
+$successMessage = "";
+$errorMessage = "";
 
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $email = $_POST['email'];
+    $newUsername = $_POST['username'];
+    $password = !empty($_POST['password']) ? $_POST['password'] : $user['password'];
+    
+    // Check if username was changed and is not already taken
+    if ($newUsername != $username) {
+        $checkStmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND username != ?");
+        $checkStmt->bind_param("ss", $newUsername, $username);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        
+        if ($checkResult->num_rows > 0) {
+            $errorMessage = "Username already exists. Please choose another.";
+            $checkStmt->close();
+        } else {
+            $checkStmt->close();
+            
+            // Update user information
+            $updateStmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, username = ?, password = ? WHERE username = ?");
+            $updateStmt->bind_param("ssssss", $firstName, $lastName, $email, $newUsername, $password, $username);
+            
+            if ($updateStmt->execute()) {
+                $_SESSION['username'] = $newUsername; // Update session with new username
+                $successMessage = "Profile updated successfully!";
+                
+                // Refresh user data
+                $username = $newUsername;
+                $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+                $stmt->bind_param("s", $username);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $user = $result->fetch_assoc();
+                $stmt->close();
+            } else {
+                $errorMessage = "Error updating profile: " . $conn->error;
+            }
+            
+            $updateStmt->close();
+        }
+    } else {
+        // Update user information without changing username
+        $updateStmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE username = ?");
+        $updateStmt->bind_param("sssss", $firstName, $lastName, $email, $password, $username);
+        
+        if ($updateStmt->execute()) {
+            $successMessage = "Profile updated successfully!";
+            
+            // Refresh user data
+            $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $user = $result->fetch_assoc();
+            $stmt->close();
+        } else {
+            $errorMessage = "Error updating profile: " . $conn->error;
+        }
+        
+        $updateStmt->close();
+    }
+}
 
 ?>
 <!DOCTYPE html>
@@ -150,6 +225,7 @@ if (!isset($_SESSION['username'])) {
     }
     .form-group {
       margin-bottom: 1.5rem;
+      position: relative;
     }
     .form-group label {
       display: block;
@@ -192,6 +268,32 @@ if (!isset($_SESSION['username'])) {
     .cancel-btn:hover {
       background-color: #e0e0e0;
     }
+    
+    /* Password toggle icon styles */
+    .password-toggle-icon {
+      position: absolute;
+      right: 10px;
+      top: 38px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    /* Alert styles */
+    .alert {
+      margin-bottom: 1rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 5px;
+    }
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .alert-danger {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
 
     @media screen and (max-width: 768px) {
       .side {
@@ -210,43 +312,71 @@ if (!isset($_SESSION['username'])) {
         height: 200px;
         font-size: 50px;
       }
+      .form-group input {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-      <?php include("sidebar.php") ?>
+  <?php include("sidebar.php") ?>
 
   <div class="main">
     <h1 class="page-title">Personal Information</h1>
-    <div class="profile-form">
-      <div class="profile-circle"></div>
-      <div class="profile-info">
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" value="First Name">
+    
+    <?php if (!empty($successMessage)): ?>
+    <div class="alert alert-success">
+      <?php echo $successMessage; ?>
+    </div>
+    <?php endif; ?>
+    
+    <?php if (!empty($errorMessage)): ?>
+    <div class="alert alert-danger">
+      <?php echo $errorMessage; ?>
+    </div>
+    <?php endif; ?>
+    
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+      <div class="profile-form">
+        <div class="profile-circle">
+          <?php 
+            // Display the first letter of the first name if available
+            if (isset($user['first_name']) && !empty($user['first_name'])) {
+              echo strtoupper(substr($user['first_name'], 0, 1));
+            } else {
+              echo strtoupper(substr($username, 0, 1));
+            }
+          ?>
         </div>
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" value="Last Name">
-        </div>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" value="email@gmail.com">
-        </div>
-        <div class="form-group">
-          <label>User Name</label>
-          <input type="text" value="<?php echo ($_SESSION['username']) ?>">
-        </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" value="password" readonly>
-        </div>
-        <div class="form-actions">
-          <button class="save-btn">SAVE</button>
-          <button class="cancel-btn">CANCEL</button>
+        <div class="profile-info">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" name="firstName" value="<?php echo isset($user['first_name']) ? htmlspecialchars($user['first_name']) : ''; ?>" required>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" name="lastName" value="<?php echo isset($user['last_name']) ? htmlspecialchars($user['last_name']) : ''; ?>" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="<?php echo isset($user['email']) ? htmlspecialchars($user['email']) : ''; ?>" required>
+          </div>
+          <div class="form-group">
+            <label>User Name</label>
+            <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" id="passwordField" value="<?php echo isset($user['password']) ? htmlspecialchars($user['password']) : ''; ?>">
+            <i class="bx bx-hide password-toggle-icon" id="togglePassword"></i>
+          </div>
+          <div class="form-actions">
+            <button type="submit" name="save_profile" class="save-btn">SAVE</button>
+            <button type="button" class="cancel-btn" onclick="window.location.href='dashboard.php'">CANCEL</button>
+          </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 
   <!-- Logout Confirmation Modal -->
@@ -271,5 +401,26 @@ if (!isset($_SESSION['username'])) {
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Password visibility toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordField = document.getElementById('passwordField');
+      
+      togglePassword.addEventListener('click', function() {
+        // Toggle password visibility
+        if (passwordField.type === 'password') {
+          passwordField.type = 'text';
+          togglePassword.classList.remove('bx-hide');
+          togglePassword.classList.add('bx-show');
+        } else {
+          passwordField.type = 'password';
+          togglePassword.classList.remove('bx-show');
+          togglePassword.classList.add('bx-hide');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
