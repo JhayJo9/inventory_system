@@ -212,17 +212,24 @@
         <div class="stat-title">LOW STOCK ITEMS</div>
         <div class="stat-value">
         <?php
-                $sql = "SELECT count(quantity) as inStock from items";
-                $result = $conn->query($sql);
+                $sql = "SELECT
+                item_id,
+                item_no,
+                item_name,
+                category,
+                quantity,
+                item_unit,
+                restock_point,
+                CASE
+                    WHEN quantity <= restock_point 
+                    THEN 
+                      'Low Stock'
+                    ELSE 
+                      'Sufficient'
+                END AS status
+            FROM items;";
 
-                if($result && $result->num_rows > 0) {
-                    while($row = $result->fetch_assoc()) {
-                        echo htmlspecialchars($row['inStock']);
-                    }
-
-                }else{
-                  echo "0";
-                }
+                
 
             ?>
         </div>

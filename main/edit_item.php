@@ -13,13 +13,6 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
-
-// Check if ID is provided
-if (!isset($_GET['id'])) {
-    header("Location: items.php");
-    exit;
-}
-
 $itemId = $_GET['id'];
 
 // Fetch item data from the database
@@ -36,6 +29,13 @@ if ($result->num_rows == 0) {
 }
 
 $item = $result->fetch_assoc();
+// Check if ID is provided
+if (!isset($_GET['id'])) {
+    header("Location: items.php");
+    exit;
+}
+
+
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -78,13 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get current status for display purposes
-$status = "Sufficient";
-if ($item['quantity'] == 0) {
-    $status = "Out of Stock";
-} elseif ($item['quantity'] <= $item['restock_point']) {
-    $status = "Low Stock";
-}
+    // DISPLAY AUTOMATICALLY THE STATUS BASED ON THE QUANTITY AND RESTOCK POINT
+    $status = "Sufficient";
+    if ($item['quantity'] == 0) {
+        $status = "Out of Stock";
+    } elseif ($item['quantity'] <= $item['restock_point']) {
+        $status = "Low Stock";
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -232,7 +232,7 @@ if ($item['quantity'] == 0) {
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="itemNo" class="form-label">Item ID</label>
-              <input type="text" disabled class="form-control" id="itemNo" name="itemNo" value="<?php echo htmlspecialchars($item['item_no']); ?>" <?php echo ($_SESSION['role'] === 'Admin') ? 'required' : 'readonly'; ?>>
+              <input type="text" disabled class="form-control" id="itemNo" name="itemNo" value="<?php echo htmlspecialchars($item['item_id']); ?>" <?php echo ($_SESSION['role'] === 'Admin') ? 'required' : 'readonly'; ?>>
             </div>
             <div class="col-md-6 mb-3">
               <label for="itemName" class="form-label">Item Name</label>

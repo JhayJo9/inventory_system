@@ -14,6 +14,40 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $id = $_POST['category_id'];
+  $name = $_POST['category_name'];
+
+  if ($conn->connect_error) {
+      die("Connection failed: " . $conn->connect_error);
+  }
+
+
+
+  $stmt = $conn->prepare("INSERT INTO category (null, category_name) VALUES (?, ?)");
+  $stmt->bind_param("issisi", $id, $name);
+
+  if ($stmt->execute()) {
+      header("Location: category.php?success=1");
+      exit;
+  } else {
+      $error = "Error: " . $stmt->error;
+  }
+
+  $stmt->close();
+  $conn->close();
+}
+
+
+
+$sql = "select ifnull(max(category_id), 0) + 1 as maxCategoryId from category";
+$result = $conn->query($sql);
+if($result && $result->num_rows > 0){
+   while($row = $result->fetch_assoc()){
+       $item = $row['maxCategoryId'];
+   }
+}
+
 
 
 
@@ -197,19 +231,7 @@ if (!isset($_SESSION['username'])) {
       <div class="row mb-3">
         <div class="col">
           <label>Category ID</label>
-          <?php 
-           $sql = "select ifnull(max(item_id), 0) + 1 as maxItemid from items";
-           $result = $conn->query($sql);
-
-           if($result && $result->num_rows > 0){
-              while($row = $result->fetch_assoc()){
-                  $num = $row['maxItemid'];
-                  echo '<input type="text" value="<!php   ?>" disabled name="category_id" class="form-control" required>';
-              }
-
-           }
-          ?>
-          <input type="text" value="<!php   ?>" disabled name="category_id" class="form-control" required>;
+          <input type="text" disabled class="form-control" id="itemNo" name="itemNo" value="<?php echo htmlspecialchars($item); ?>">
         </div>
         <div class="col">
           <label>Category Name</label>
