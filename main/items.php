@@ -12,6 +12,10 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
+
+// Process search input if provided
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$search_safe = $conn->real_escape_string($search);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -189,17 +193,33 @@ if (!isset($_SESSION['username'])) {
         }else {
           echo '<p class="card-text">You can update the quantity</p>';
         }
-
     ?>
 
-    <!-- Allow both Admin and Staff to add items -->
-    <div class="mb-3">
-     
-      <?php 
+    <div class="row mb-3">
+      <div class="col-lg-4 col-md-6 mb-2">
+        <?php 
           if ($_SESSION['role'] === 'Admin') {
-            echo '<a href="save_item.php" class="btn btn-success"><i class="bx bx-plus"></i> Add Item</a> ';
-        }
-      ?>
+            echo '<a href="save_item.php" class="btn btn-success"><i class="bx bx-plus"></i> Add Item</a>';
+          }
+        ?>
+      </div>
+      
+      <div class="col-lg-8 col-md-6">
+        <form action="" method="GET" class="mb-0">
+          <div class="input-group">
+            <input type="text" class="form-control" id="search" name="search" placeholder="Search items..." value="<?php echo htmlspecialchars($search); ?>">
+            <button class="btn btn-outline-secondary" type="submit">
+              <i class="bx bx-search"></i>
+            </button>
+            <?php if(!empty($search)): ?>
+              <a href="<?php echo $_SERVER['PHP_SELF']; ?>" class="btn btn-outline-secondary">
+                <i class="bx bx-x"></i>
+              </a>
+            <?php endif; ?>
+          </div>
+          <div class="form-text">Search by ID, name, category, or any field</div>
+        </form>
+      </div>
     </div>
 
     <div class="table-responsive">
@@ -218,24 +238,51 @@ if (!isset($_SESSION['username'])) {
         </thead>
         <tbody>
           <?php
+          // Modify SQL query to include search functionality
           $sql = "SELECT
-          item_id,
-          item_no,
-          item_name,
-          category,
-          quantity,
-          item_unit,
-          restock_point,
-          CASE
-              WHEN quantity = 0 THEN 'Out of Stock'
-              WHEN quantity <= restock_point THEN 'Low Stock'
-              ELSE 'Sufficient'
-          END AS status
-      FROM items;";
+            item_id,
+            item_no,
+            item_name,
+            category,
+            quantity,
+            item_unit,
+            restock_point,
+            CASE
+                WHEN quantity = 0 THEN 'Out of Stock'
+                WHEN quantity <= restock_point THEN 'Low Stock'
+                ELSE 'Sufficient'
+            END AS status
+          FROM items";
+          
+          // Add WHERE clause for search if search term exists
+          if (!empty($search)) {
+            $sql .= " WHERE 
+                item_no LIKE '%$search_safe%' OR 
+                item_name LIKE '%$search_safe%' OR 
+                category LIKE '%$search_safe%' OR 
+                item_unit LIKE '%$search_safe%' OR
+                CAST(quantity AS CHAR) LIKE '%$search_safe%' OR
+                CAST(restock_point AS CHAR) LIKE '%$search_safe%' OR
+                (CASE
+                    WHEN quantity = 0 THEN 'Out of Stock'
+                    WHEN quantity <= restock_point THEN 'Low Stock'
+                    ELSE 'Sufficient'
+                END) LIKE '%$search_safe%'";
+          }
+
           $result = $conn->query($sql);
 
           if ($result && $result->num_rows > 0) {
               while ($row = $result->fetch_assoc()) {
+                  $statusClass = '';
+                  if ($row['status'] == 'Out of Stock') {
+                      $statusClass = 'badge bg-danger';
+                  } else if ($row['status'] == 'Low Stock') {
+                      $statusClass = 'badge bg-warning text-dark';
+                  } else {
+                      $statusClass = 'badge bg-success';
+                  }
+                  
                   echo "<tr>";
                   echo "<td>" . htmlspecialchars($row['item_no']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['item_name']) . "</td>";
@@ -243,7 +290,7 @@ if (!isset($_SESSION['username'])) {
                   echo "<td>" . htmlspecialchars($row['category']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['quantity']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['restock_point']) . "</td>";
-                  echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                  echo "<td><span class='" . $statusClass . "'>" . htmlspecialchars($row['status']) . "</span></td>";
                   echo "<td>";
                   // Both Admin and Staff can edit/update
                   echo "<a href='edit_item.php?id=" . $row['item_id'] . "' class='btn btn-warning btn-sm'><i class='bx bx-edit'></i></a> ";
@@ -258,7 +305,7 @@ if (!isset($_SESSION['username'])) {
                   echo "</tr>";
               }
           } else {
-              echo "<tr><td colspan='7'>No items found</td></tr>";
+              echo "<tr><td colspan='8' class='text-center'>No items found</td></tr>";
           }
           ?>
         </tbody>

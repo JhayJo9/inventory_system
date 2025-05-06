@@ -209,34 +209,42 @@
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">LOW STOCK ITEMS</div>
-        <div class="stat-value">
-        <?php
-                $sql = "SELECT
-                item_id,
-                item_no,
-                item_name,
-                category,
-                quantity,
-                item_unit,
-                restock_point,
-                CASE
-                    WHEN quantity <= restock_point 
-                    THEN 
-                      'Low Stock'
-                    ELSE 
-                      'Sufficient'
-                END AS status
-            FROM items;";
-
-                
-
-            ?>
-        </div>
-      </div>
+  <div class="stat-title">LOW STOCK ITEMS</div>
+  <div class="stat-value">
+    <?php
+      // Query to count low stock items
+      $lowStockSql = "SELECT COUNT(*) as low_stock_count 
+                     FROM items 
+                     WHERE quantity <= restock_point AND quantity > 0";
+      
+      $lowStockResult = $conn->query($lowStockSql);
+      
+      if ($lowStockResult && $lowStockRow = $lowStockResult->fetch_assoc()) {
+        echo $lowStockRow['low_stock_count'];
+      } else {
+        echo "0";
+      }
+    ?>
+  </div>
+</div>
       <div class="stat-card">
         <div class="stat-title">OUT OF STOCK ITEMS</div>
-        <div class="stat-value">0</div>
+        <div class="stat-value">
+        <?php
+      // Query to count low stock items
+      $outOfStockSql = "SELECT COUNT(*) as out_of_stock_count 
+                     FROM items 
+                     WHERE quantity <= 0";
+      
+      $OutOfStockResult = $conn->query($outOfStockSql);
+      
+      if ($OutOfStockResult && $OutOfStockRow = $OutOfStockResult->fetch_assoc()) {
+        echo $OutOfStockRow['out_of_stock_count'];
+      } else {
+        echo "0";
+      }
+    ?>
+        </div>
       </div>
       <div class="stat-card">
         <div class="stat-title">IN STOCK ITEMS</div>
