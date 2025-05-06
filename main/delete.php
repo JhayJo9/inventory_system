@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Check if ID is provided
+// CHECK IF ID IS PROVIDED
 if (!isset($_GET['id'])) {
     header("Location: account.php");
     exit;

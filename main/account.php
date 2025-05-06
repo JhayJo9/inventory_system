@@ -13,6 +13,11 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
+
+if (isset($_SESSION['success_message'])) {
+  unset($_SESSION['success_message']);
+}
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -266,7 +271,7 @@ if (!isset($_SESSION['username'])) {
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Set up delete modal
+    // SETUP MODAL FOR DELETE
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
       deleteModal.addEventListener('show.bs.modal', function (event) {

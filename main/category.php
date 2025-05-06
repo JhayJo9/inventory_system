@@ -1,10 +1,11 @@
 <?php
-    include("../config.php");
-
-
-
-
-
+  session_start();
+  include("../config.php");
+  include("check_session.php");
+  include("restrictAccess.php");
+  
+  // RESTRICT ACCESS TO ADMIN AND STAFF ONLY
+  restrictAccess(['Admin']);
 
 ?>
 
@@ -180,7 +181,29 @@
     <h5 class="card-title"><strong>Category</strong></h5>
     <p class="card-text">You can edit, update, and delete category here</p>
 
-    <!-- Allow both Admin and Staff to add items -->
+    <?php
+if (isset($_SESSION['success_message'])) {
+    echo '<div class="alert alert-success alert-dismissible fade show" role="alert">';
+    echo $_SESSION['success_message'];
+    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    echo '</div>';
+    
+    // CLEAR THE MESSAGE SO IT WON'T HOW AGAIN
+    unset($_SESSION['success_message']);
+}
+
+// HANDLE ERROR MESSAGE
+if (isset($_SESSION['error_message'])) {
+    echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">';
+    echo $_SESSION['error_message'];
+    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
+    echo '</div>';
+    
+        // CLEAR THE MESSAGE SO IT WON'T HOW AGAIN
+    unset($_SESSION['error_message']);
+}
+?>
+    <!--ALLOW ADMIN TO ADD CATEGORY -->
     <div class="mb-3">
       <a href="save_category.php" class="btn btn-success"><i class='bx bx-plus'></i> Add Category</a>
     </div>
@@ -205,7 +228,7 @@
                   echo "<td>" . htmlspecialchars($row['category_id']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
                   echo "<td>";
-                  // BOTH ADMIN CAN UPDATE, ADD, DELETE
+                  // ADMIN CAN UPDATE, ADD, DELETE
                   echo "<a href='edit_category.php?id=" . $row['category_id'] . "' class='btn btn-warning btn-sm'><i class='bx bx-edit'></i></a> ";
                   if ($_SESSION['role'] === 'Admin') {
                       echo "<button class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#deleteModal' 
@@ -225,7 +248,7 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal - Only for Admin -->
+  <!-- DELETE CONFIRMATION FOR ADMIN ONLY -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -245,7 +268,7 @@
     </div>
   </div>
 
-  <!-- Logout Confirmation Modal -->
+  <!-- LOGOUT CONFIRMATION MODAL -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">
@@ -268,7 +291,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Set up delete modal
+    // SETUP DELETE MODAL
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
       deleteModal.addEventListener('show.bs.modal', function (event) {

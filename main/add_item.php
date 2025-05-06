@@ -9,7 +9,7 @@ include("restrictAccess.php");
 // IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
 restrictAccess(['Admin', 'Staff']);
 
-// Redirect to login if not logged in
+// REDIRECT TO LOGIN OF NOT LOGGED IN
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
