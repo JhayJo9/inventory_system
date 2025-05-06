@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-// IMPORT THE NEEDED FILES TO ACCESS
+// IMPORT REQUIRED CONNECTION AND ACCESS CONTROL FILES
 include("../config.php");
 include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+// RESTRICT ACCESS TO ADMIN AND STAFF ONLY
 restrictAccess(['Admin', 'Staff']);
 
 if (!isset($_SESSION['username'])) {
@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Get user data from database
+// GET USER DATA FROM DATABASE
 $username = $_SESSION['username'];
 $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
 $stmt->bind_param("s", $username);
@@ -22,10 +22,11 @@ $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 $stmt->close();
 
-// Process form submission
+// INITIALIZE MESSAGES
 $successMessage = "";
 $errorMessage = "";
 
+// PROCESS FORM SUBMISSION
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
@@ -33,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
     $newUsername = $_POST['username'];
     $password = !empty($_POST['password']) ? $_POST['password'] : $user['password'];
     
-    // Check if username was changed and is not already taken
+    // CHECK IF USERNAME CHANGED AND IS UNIQUE
     if ($newUsername != $username) {
         $checkStmt = $conn->prepare("SELECT * FROM users WHERE username = ? AND username != ?");
         $checkStmt->bind_param("ss", $newUsername, $username);
@@ -46,15 +47,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
         } else {
             $checkStmt->close();
             
-            // Update user information
+            // UPDATE USER INFORMATION WITH NEW USERNAME
             $updateStmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, username = ?, password = ? WHERE username = ?");
             $updateStmt->bind_param("ssssss", $firstName, $lastName, $email, $newUsername, $password, $username);
             
             if ($updateStmt->execute()) {
-                $_SESSION['username'] = $newUsername; // Update session with new username
+                $_SESSION['username'] = $newUsername; // UPDATE SESSION DATA
                 $successMessage = "Profile updated successfully!";
                 
-                // Refresh user data
+                // REFRESH USER DATA
                 $username = $newUsername;
                 $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
                 $stmt->bind_param("s", $username);
@@ -69,14 +70,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
             $updateStmt->close();
         }
     } else {
-        // Update user information without changing username
+        // UPDATE USER INFORMATION WITHOUT CHANGING USERNAME
         $updateStmt = $conn->prepare("UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ? WHERE username = ?");
         $updateStmt->bind_param("sssss", $firstName, $lastName, $email, $password, $username);
         
         if ($updateStmt->execute()) {
             $successMessage = "Profile updated successfully!";
             
-            // Refresh user data
+            // REFRESH USER DATA
             $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
             $stmt->bind_param("s", $username);
             $stmt->execute();
@@ -90,7 +91,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
         $updateStmt->close();
     }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

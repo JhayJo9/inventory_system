@@ -1,11 +1,11 @@
 <?php
 session_start();
 
-// IMPORT THE NEEDED FILES TO ACCESS
+// IMPORT REQUIRED CONNECTION AND ACCESS CONTROL FILES
 include("../config.php");
 include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+// RESTRICT ACCESS TO ADMIN AND STAFF ONLY
 restrictAccess(['Admin', 'Staff']);
 
 if (!isset($_SESSION['username'])) {
@@ -13,7 +13,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Process search input if provided
+// PROCESS SEARCH FUNCTIONALITY
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $search_safe = $conn->real_escape_string($search);
 ?>
@@ -284,7 +284,7 @@ $search_safe = $conn->real_escape_string($search);
                   }
                   
                   echo "<tr>";
-                  echo "<td>" . htmlspecialchars($row['item_no']) . "</td>";
+                  echo "<td>" . htmlspecialchars($row['item_id']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['item_name']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['item_unit']) . "</td>";
                   echo "<td>" . htmlspecialchars($row['category']) . "</td>";

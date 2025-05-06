@@ -1,12 +1,12 @@
 <?php
 session_start();
 
-// IMPORT THE NEEDED FILES TO ACCESS
+// IMPORT REQUIRED CONNECTION AND ACCESS CONTROL FILES
 require_once('check_session.php');
 include("../config.php");
 include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+// RESTRICT ACCESS TO ADMIN ONLY
 restrictAccess(['Admin']);
 
 if (!isset($_SESSION['username'])) {

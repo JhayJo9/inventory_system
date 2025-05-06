@@ -1,12 +1,12 @@
 <?php
 session_start();
 
-// IMPORT THE NEEDED FILES TO ACCESS
+// IMPORT REQUIRED CONNECTION AND ACCESS CONTROL FILES
 require_once('check_session.php');
 include("../config.php");
 include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+// RESTRICT ACCESS TO ADMIN AND STAFF ONLY
 restrictAccess(['Admin', 'Staff']);
 
 if (!isset($_SESSION['username'])) {
@@ -14,7 +14,7 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
-// Check if ID is provided
+// VERIFY CATEGORY ID IS PROVIDED
 if (!isset($_GET['id'])) {
     header("Location: category.php");
     exit;
@@ -22,7 +22,7 @@ if (!isset($_GET['id'])) {
 
 $categoryId = $_GET['id'];
 
-// Fetch category data from the database
+// FETCH CATEGORY DATA FROM DATABASE
 $sql = "SELECT * FROM category WHERE category_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $categoryId);
@@ -37,11 +37,11 @@ if ($result->num_rows == 0) {
 
 $category = $result->fetch_assoc();
 
-// Handle form submission
+// PROCESS FORM SUBMISSION
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryName = $_POST['categoryName'];
     
-    // Check if category name exists but has a different ID
+    // CHECK IF CATEGORY NAME ALREADY EXISTS
     $checkSql = "SELECT * FROM category WHERE category_name = ? AND category_id != ?";
     $checkStmt = $conn->prepare($checkSql);
     $checkStmt->bind_param("si", $categoryName, $categoryId);
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($checkResult->num_rows > 0) {
         $error = "Category name already exists. Please choose a different name.";
     } else {
-        // Update category
+        // UPDATE CATEGORY IN DATABASE
         $updateSql = "UPDATE category SET category_name = ? WHERE category_id = ?";
         $updateStmt = $conn->prepare($updateSql);
         $updateStmt->bind_param("si", $categoryName, $categoryId);

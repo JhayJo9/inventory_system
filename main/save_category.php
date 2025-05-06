@@ -1,19 +1,20 @@
 <?php 
-
 session_start();
 
-// IMPORT THE NEEDED FILES TO ACCESS
+// IMPORT REQUIRED CONNECTION AND ACCESS CONTROL FILES
 require_once('check_session.php');
 include("../config.php");
 include("restrictAccess.php");
 
-// IDENTIFYING THE USER WHO CAN ACCESS THIS PAGE
+// RESTRICT ACCESS TO ADMIN AND STAFF ONLY
 restrictAccess(['Admin', 'Staff']);
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit;
 }
+
+// PROCESS FORM SUBMISSION
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $id = $_POST['category_id'];
   $name = $_POST['category_name'];
@@ -22,8 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       die("Connection failed: " . $conn->connect_error);
   }
 
-
-
+  // INSERT NEW CATEGORY INTO DATABASE
   $stmt = $conn->prepare("INSERT INTO category (null, category_name) VALUES (?, ?)");
   $stmt->bind_param("issisi", $id, $name);
 
@@ -38,8 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $conn->close();
 }
 
-
-
+// GET NEXT AVAILABLE CATEGORY ID
 $sql = "select ifnull(max(category_id), 0) + 1 as maxCategoryId from category";
 $result = $conn->query($sql);
 if($result && $result->num_rows > 0){
@@ -47,10 +46,6 @@ if($result && $result->num_rows > 0){
        $item = $row['maxCategoryId'];
    }
 }
-
-
-
-
 ?>
 
 

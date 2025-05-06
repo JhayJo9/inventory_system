@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-    $stmt = $conn->prepare("INSERT INTO items (item_no, item_name, category, quantity, item_unit, restock_point) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO items (item_id, item_name, category, quantity, item_unit, restock_point) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("issisi", $id, $name, $category, $quantity, $unit, $restock);
 
     if ($stmt->execute()) {
