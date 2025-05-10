@@ -13,15 +13,23 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Function to generate password based on date/time (12 digits)
+function generatePassword() {
+    // Format: YYMMDDhhmmss (12 digits)
+    return date('ymdHis');
+}
+
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Process form data
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
     $username = $_POST['username'];
-    $password = $_POST['password'];
     $roleId = $_POST['roleId'];
     $status = $_POST['status'];
+    
+    // Generate password
+    $password = generatePassword();
     
     // Check if username already exists
     $checkSql = "SELECT * FROM users WHERE username = ?";
@@ -40,7 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("ssssis", $username, $password, $firstName, $lastName, $roleId, $status);
         
         if ($stmt->execute()) {
+            // Store success message and generated password in session
             $_SESSION['success_message'] = "Account added successfully";
+            $_SESSION['generated_password'] = $password;
             header("Location: account.php");
             exit;
         } else {
@@ -182,6 +192,13 @@ $rolesResult = $conn->query($rolesSql);
       margin-bottom: 2rem;
       color: #555;
     }
+    .password-info {
+      background-color: #f8f9fa;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border-left: 4px solid #28a745;
+    }
     @media screen and (max-width: 768px) {
       .side {
         width: 100px;
@@ -205,7 +222,11 @@ $rolesResult = $conn->query($rolesSql);
           <div class="alert alert-danger"><?php echo $error; ?></div>
         <?php endif; ?>
         
-        <form id="addAccountForm" action="save_account.php" method="POST">
+        <div class="password-info">
+          <p><strong>Note:</strong> Password will be automatically generated based on the current date and time (12 digits). You'll see the generated password after account creation.</p>
+        </div>
+        
+        <form id="addAccountForm" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="POST">
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="firstName" class="form-label">First Name</label>
@@ -218,13 +239,9 @@ $rolesResult = $conn->query($rolesSql);
           </div>
           
           <div class="row">
-            <div class="col-md-6 mb-3">
+            <div class="col-md-12 mb-3">
               <label for="username" class="form-label">Username</label>
               <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required>
             </div>
           </div>
           
@@ -267,6 +284,7 @@ $rolesResult = $conn->query($rolesSql);
         </div>
         <div class="modal-body">
           <p>Are you sure you want to add this account?</p>
+          <p><strong>Note:</strong> An auto-generated password will be created for this user.</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

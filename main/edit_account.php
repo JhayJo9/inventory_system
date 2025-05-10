@@ -251,7 +251,6 @@ $rolesResult = $conn->query($rolesSql);
               <select class="form-select" id="roleId" name="roleId" required>
                 <option value="">Select Role</option>
                 <?php 
-                // Reset the pointer to beginning of result set
                 $rolesResult->data_seek(0);
                 while($role = $rolesResult->fetch_assoc()): 
                   $selected = ($role['role_id'] == $user['role_id']) ? 'selected' : '';
@@ -279,7 +278,7 @@ $rolesResult = $conn->query($rolesSql);
     </div>
   </div>
 
-  <!-- Update Confirmation Modal -->
+  <!-- UPDATE CONFIRMATION MODAL -->
   <div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-labelledby="confirmUpdateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -298,7 +297,7 @@ $rolesResult = $conn->query($rolesSql);
     </div>
   </div>
 
-  <!-- Logout Confirmation Modal -->
+  <!-- LOGOUT CONFIRMATION MODAL -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">

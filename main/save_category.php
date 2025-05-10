@@ -14,50 +14,64 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// GET NEXT AVAILABLE CATEGORY ID
+$sql = "SELECT IFNULL(MAX(category_id), 0) + 1 AS maxCategoryId FROM category";
+$result = $conn->query($sql);
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $nextCategoryId = $row['maxCategoryId'];
+} else {
+    $nextCategoryId = 1;
+}
+
 // PROCESS FORM SUBMISSION
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $id = $_POST['category_id'];
-  $name = $_POST['category_name'];
-
-  if ($conn->connect_error) {
-      die("Connection failed: " . $conn->connect_error);
-  }
-
-  // INSERT NEW CATEGORY INTO DATABASE
-  $stmt = $conn->prepare("INSERT INTO category (null, category_name) VALUES (?, ?)");
-  $stmt->bind_param("issisi", $id, $name);
-
-  if ($stmt->execute()) {
-      header("Location: category.php?success=1");
-      exit;
-  } else {
-      $error = "Error: " . $stmt->error;
-  }
-
-  $stmt->close();
-  $conn->close();
-}
-
-// GET NEXT AVAILABLE CATEGORY ID
-$sql = "select ifnull(max(category_id), 0) + 1 as maxCategoryId from category";
-$result = $conn->query($sql);
-if($result && $result->num_rows > 0){
-   while($row = $result->fetch_assoc()){
-       $item = $row['maxCategoryId'];
-   }
+    $categoryName = trim($_POST['Category_name']);
+    
+    if (empty($categoryName)) {
+        $_SESSION['error_message'] = "Category name cannot be empty";
+        header("Location: save_category.php");
+        exit;
+    }
+    
+    // CHECK IF CATEGORY NAME ALREADY EXISTS
+    $checkSql = "SELECT * FROM category WHERE category_name = ?";
+    $checkStmt = $conn->prepare($checkSql);
+    $checkStmt->bind_param("s", $categoryName);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
+    
+    if ($checkResult->num_rows > 0) {
+        $_SESSION['error_message'] = "Category name already exists. Please choose a different name.";
+        header("Location: save_category.php");
+        exit;
+    }
+    
+    // INSERT NEW CATEGORY INTO DATABASE
+    $insertSql = "INSERT INTO category (category_name) VALUES (?)";
+    $insertStmt = $conn->prepare($insertSql);
+    $insertStmt->bind_param("s", $categoryName);
+    
+    if ($insertStmt->execute()) {
+        $_SESSION['success_message'] = "Category added successfully";
+        header("Location: category.php");
+        exit;
+    } else {
+        $_SESSION['error_message'] = "Error adding category: " . $conn->error;
+        header("Location: save_category.php");
+        exit;
+    }
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Add Category</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700" rel="stylesheet" />
-  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
     * {
       font-family: 'Montserrat', sans-serif;
@@ -177,29 +191,6 @@ if($result && $result->num_rows > 0){
       margin-bottom: 2rem;
       color: #555;
     }
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .stat-card {
-      background-color: white;
-      border-radius: 10px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .stat-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 600;
-      color: #333;
-    }
     @media screen and (max-width: 768px) {
       .side {
         width: 100px;
@@ -208,37 +199,58 @@ if($result && $result->num_rows > 0){
         margin-left: 100px;
         width: calc(100% - 100px);
       }
-      .stats-container {
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
   </style>
 </head>
 <body>
-     
-        <?php include('sidebar.php'); ?>
-        <div class="main">
-  <h1 class="welcome">Add Category</h1>
-  <p class="subtitle">You can add category here</p>
+    <?php include('sidebar.php'); ?>
+    <div class="main">
+        <h1 class="welcome">Add Category</h1>
+        <p class="subtitle">You can add category here</p>
 
-  <div style="max-width: 600px; background-color: #D9D9D9; padding: 2rem; border-radius: 15px;">
-    <form action="save_item.php" method="post">
-      <div class="row mb-3">
-        <div class="col">
-          <label>Category ID</label>
-          <input type="text" disabled class="form-control" id="itemNo" name="itemNo" value="<?php echo htmlspecialchars($item); ?>">
+        <!-- Display error/success messages -->
+        <?php if (isset($_SESSION['error_message'])): ?>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <?php 
+                    echo $_SESSION['error_message']; 
+                    unset($_SESSION['error_message']);
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['success_message'])): ?>
+            <div class="alert alert-success alert-dismissible fade show">
+                <?php 
+                    echo $_SESSION['success_message']; 
+                    unset($_SESSION['success_message']);
+                ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
+        <div style="max-width: 600px; background-color: #D9D9D9; padding: 2rem; border-radius: 15px;">
+            <form action="save_category.php" method="post">
+                <div class="row mb-3">
+                    <div class="col">
+                        <label>Category ID</label>
+                        <input type="text" readonly class="form-control" value="<?php echo htmlspecialchars($nextCategoryId); ?>">
+                        <!-- Hidden input to store the next category ID if needed -->
+                        <input type="hidden" name="next_category_id" value="<?php echo htmlspecialchars($nextCategoryId); ?>">
+                    </div>
+                    <div class="col">
+                        <label>Category Name</label>
+                        <input type="text" name="Category_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-dark me-2">Add</button>
+                    <a href="category.php" class="btn btn-danger">Cancel</a>
+                </div>
+            </form>
         </div>
-        <div class="col">
-          <label>Category Name</label>
-          <input type="text" name="Category_name"  class="form-control" required>
-        </div>
-      </div>
-      <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-dark me-2">Add</button>
-        <a href="category.php" class="btn btn-danger">Cancel</a>
-      </div>
-    </form>
-  </div>
-</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -238,10 +238,9 @@ $search_safe = $conn->real_escape_string($search);
         </thead>
         <tbody>
           <?php
-          // Modify SQL query to include search functionality
+          // SEARCH FUNCTIONALITY
           $sql = "SELECT
             item_id,
-            item_no,
             item_name,
             category,
             quantity,
@@ -253,11 +252,9 @@ $search_safe = $conn->real_escape_string($search);
                 ELSE 'Sufficient'
             END AS status
           FROM items";
-          
-          // Add WHERE clause for search if search term exists
           if (!empty($search)) {
             $sql .= " WHERE 
-                item_no LIKE '%$search_safe%' OR 
+                item_id LIKE '%$search_safe%' OR 
                 item_name LIKE '%$search_safe%' OR 
                 category LIKE '%$search_safe%' OR 
                 item_unit LIKE '%$search_safe%' OR
@@ -292,9 +289,9 @@ $search_safe = $conn->real_escape_string($search);
                   echo "<td>" . htmlspecialchars($row['restock_point']) . "</td>";
                   echo "<td><span class='" . $statusClass . "'>" . htmlspecialchars($row['status']) . "</span></td>";
                   echo "<td>";
-                  // Both Admin and Staff can edit/update
+                  // BOTH ADMIN AND STAFF CAN EDIT/UPDATE
                   echo "<a href='edit_item.php?id=" . $row['item_id'] . "' class='btn btn-warning btn-sm'><i class='bx bx-edit'></i></a> ";
-                  // Only Admin can delete
+                  // ONLY THE ADMIN CAN DELETE
                   if ($_SESSION['role'] === 'Admin') {
                       echo "<button class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#deleteModal' 
                               data-id='" . $row['item_id'] . "' data-name='" . $row['item_name'] . "'>
@@ -313,7 +310,7 @@ $search_safe = $conn->real_escape_string($search);
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal - Only for Admin -->
+  <!-- DELETE CONFIRMATION MODAL FOR ADMIN -->
   <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -333,7 +330,7 @@ $search_safe = $conn->real_escape_string($search);
     </div>
   </div>
 
-  <!-- Logout Confirmation Modal -->
+  <!-- LOGOUT CONFIRMATION MODAL -->
   <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content" style="background-color: #4E5758; color: white; border-radius: 10px;">
@@ -356,7 +353,7 @@ $search_safe = $conn->real_escape_string($search);
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Set up delete modal
+    // SETUP DELETE MODAL
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
       deleteModal.addEventListener('show.bs.modal', function (event) {

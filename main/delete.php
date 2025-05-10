@@ -21,7 +21,7 @@ if (!isset($_GET['id'])) {
 
 $userId = $_GET['id'];
 
-// Don't allow deletion of the currently logged-in user
+// DON'T ALLOW DELETION OF THE CURRENTLY LOGGED-IN USER
 if ($_SESSION['user_id'] == $userId) {
     $_SESSION['error_message'] = "You cannot delete your own account";
     header("Location: account.php");

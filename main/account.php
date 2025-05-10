@@ -18,7 +18,6 @@ if (isset($_SESSION['success_message'])) {
   unset($_SESSION['success_message']);
 }
 ?>
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -280,7 +279,7 @@ if (isset($_SESSION['success_message'])) {
         const accountName = button.getAttribute('data-name');
         
         document.getElementById('deleteAccountName').textContent = accountName;
-        document.getElementById('confirmDeleteBtn').href = 'delete_account.php?id=' + accountId;
+        document.getElementById('confirmDeleteBtn').href = 'deleteAccount.php?id=' + accountId;
       });
     }
   </script>

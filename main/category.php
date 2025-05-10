@@ -258,7 +258,7 @@ if (isset($_SESSION['error_message'])) {
         </div>
         <div class="modal-body">
           <p>Are you sure you want to delete this item? This action cannot be undone.</p>
-          <p id="deleteItemName" class="fw-bold"></p>
+          <p id="deleteCategory" class="fw-bold"></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -296,11 +296,11 @@ if (isset($_SESSION['error_message'])) {
     if (deleteModal) {
       deleteModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
-        const itemId = button.getAttribute('data-id');
-        const itemName = button.getAttribute('data-name');
+        const category_id = button.getAttribute('data-id');
+        const category = button.getAttribute('data-name');
         
-        document.getElementById('deleteItemName').textContent = itemName;
-        document.getElementById('confirmDeleteBtn').href = 'delete_item.php?id=' + itemId;
+        document.getElementById('deleteCategory').textContent = category;
+        document.getElementById('confirmDeleteBtn').href = 'deleteCategory.php?id=' + category_id;
       });
     }
   </script>

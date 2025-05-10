@@ -15,7 +15,7 @@ if (!isset($_SESSION['username'])) {
 }
 $itemId = $_GET['id'];
 
-// Fetch item data from the database
+// FETCH EACH ITEM IN THE DATABASE
 $sql = "SELECT * FROM items WHERE item_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $itemId);
@@ -37,11 +37,11 @@ if (!isset($_GET['id'])) {
 
 
 
-// Handle form submission
+// HANDLE FROM FORM
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // For Admin users, they can update all fields
     if ($_SESSION['role'] === 'Admin') {
-        $itemNo = $_POST['itemNo'];
+        $itemId = $_POST['itemNo'];
         $itemName = $_POST['itemName'];
         $category = $_POST['category'];
         $quantity = $_POST['quantity'];
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Update item with all fields
         $updateSql = "UPDATE items SET 
-                      item_no = ?, 
+                      item_id = ?, 
                       item_name = ?, 
                       category = ?, 
                       quantity = ?, 
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                       restock_point = ? 
                       WHERE item_id = ?";
         $updateStmt = $conn->prepare($updateSql);
-        $updateStmt->bind_param("issisii", $itemNo, $itemName, $category, $quantity, $itemUnit, $restockPoint, $itemId);
+        $updateStmt->bind_param("issisii", $itemId, $itemName, $category, $quantity, $itemUnit, $restockPoint, $itemId);
     } else {
         // For Staff users, they can only update quantity
         $quantity = $_POST['quantity'];
@@ -279,7 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
-  <!-- Update Confirmation Modal -->
+  <!-- UPDATE CONFIRMATION MODAL -->
   <div class="modal fade" id="confirmUpdateModal" tabindex="-1" aria-labelledby="confirmUpdateModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
